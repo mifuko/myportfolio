@@ -1,37 +1,73 @@
 "use client";
-
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import Navbar from "./components/Navbar";
 import BlogPage from "./blog/page";
 
 export default function Home() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
+
+  // 背景移动
+  const backgroundY = useTransform(scrollY, [0, 1000], ["0%", "-40%"]);
+  
+  // 背景渐变叠加
+  const bgOverlayOpacity = useTransform(scrollY, [300, 900], [0, 1]);
+  
+  // 第一屏内容淡出
+  const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
+  const heroY = useTransform(scrollY, [0, 500], [0, -150]);
+
   return (
-    <main className="w-full min-h-[200vh] text-white scroll-smooth">
-      {/* 第一屏：封面 */}
-      <section
-        className="relative h-screen w-full bg-cover bg-center flex items-center justify-center"
-        style={{ backgroundImage: "url('/day1bg.png')" }}
+    <main ref={ref} className="relative w-full overflow-x-hidden text-white">
+      {/* === 背景层 === */}
+      <motion.div
+        style={{
+          y: backgroundY,
+          backgroundImage: "url('/day1bg.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+        className="fixed top-0 left-0 w-full h-full z-0"
+      />
+      
+      {/* 渐变过渡遮罩 */}
+      <motion.div
+        style={{ opacity: bgOverlayOpacity }}
+        className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none"
+      >
+        <div 
+          className="w-full h-full" 
+          style={{
+            background: "linear-gradient(to bottom, rgba(250,250,250,0) 0%, rgba(250,250,250,0.6) 30%, rgba(250,250,250,0.9) 60%, rgb(250,250,250) 100%)"
+          }}
+        />
+      </motion.div>
+
+      {/* === 第一屏（Hero Section） === */}
+      <motion.section
+        style={{ opacity: heroOpacity, y: heroY }}
+        className="relative h-screen flex flex-col items-center justify-center z-20 text-center"
       >
         <Navbar />
-        <div className="bg-black bg-opacity-50 p-8 rounded-2xl text-center">
-          <h1 className="text-6xl font-bold mb-6">Hi, I’m Kidoris 👋</h1>
-          <p className="text-xl max-w-md leading-relaxed">
-            Exploring code, creativity, and the world of Web3.
-          </p>
-          <a
-            href="#blog"
-            className="absolute bottom-10 animate-bounce text-sm opacity-75 hover:opacity-100 transition"
-          >
-            Scroll ↓
-          </a>
-        </div>
-      </section>
+        <h1 className="text-6xl font-bold text-white mb-4 typing-text">
+          Hi, I'm Nightmare Walker 👋
+        </h1>
+        <p className="text-xl max-w-md mx-auto leading-relaxed">
+          Exploring code, creativity, and the world of Web3.
+        </p>
+        <a href="#blog" className="absolute bottom-10 animate-bounce text-sm opacity-75">
+          Scroll ↓
+        </a>
+      </motion.section>
 
-      {/* 第二屏：博客区块 */}
-      <section id="blog" className="bg-white text-black min-h-screen">
+      {/* === Blog Section === */}
+      <section
+        id="blog"
+        className="relative z-30"
+      >
         <BlogPage />
       </section>
     </main>
   );
 }
-
-

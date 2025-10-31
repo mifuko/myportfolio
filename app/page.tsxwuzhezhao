@@ -1,0 +1,75 @@
+"use client";
+
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import Navbar from "./components/Navbar";
+import BlogPage from "./blog/page";
+
+export default function Home() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.4], [0, -100]);
+
+  return (
+    <main className="w-full min-h-[200vh] text-white scroll-smooth">
+      {/* 第一屏 */}
+      <section
+
+      ref={ref}
+        className="relative h-screen w-full bg-cover bg-center flex items-center justify-center overflow-hidden"
+        style={{ backgroundImage: "url('/day1bg.png')" }}
+      >
+        {/* 蓝紫色遮罩层 */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-900/40 to-blue-900/15"></div>
+
+
+         <Navbar />
+
+
+
+
+
+
+	 {/* 打字动画 + 淡出效果 */}
+        <motion.div
+          style={{ opacity, y }}
+
+        >
+          <h1 className="typing-text text-6xl font-bold text-white whitespace-nowrap overflow-hidden border-r-4 border-r-white pr-5">
+            Hi, I’m Nightmare Walker 👋
+         </h1>
+          <p className="text-xl max-w-md leading-relaxed">
+            Exploring code, creativity, and the world of Web3.
+          </p>
+          <a
+            href="#blog"
+            className="absolute bottom-10 animate-bounce text-sm opacity-75 hover:opacity-100 transition"
+          >
+            Scroll ↓
+          </a>
+        </motion.div>
+
+
+
+	</section>
+
+      {/* 第二屏：Blog */}
+         <section
+	 id="blog"
+  className="relative bg-neutral-50 text-black min-h-screen shadow-[0_-10px_30px_rgba(0,0,0,0.1)]"
+>
+  {/* 顶部反向渐变 */}
+  <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-neutral-50 to-transparent"></div>
+
+  <BlogPage />
+</section>
+
+      </main>
+  );
+}
+
